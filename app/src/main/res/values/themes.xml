@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.ArkTv" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/ark_ink</item>
+        <item name="android:navigationBarColor">@color/ark_ink</item>
+    </style>
+</resources>
