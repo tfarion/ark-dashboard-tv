@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
                     if (request.isForMainFrame) queueRetry()
                 }
+
+                override fun onPageFinished(view: WebView, url: String) = fitTo1920(view)
             }
         }
         setContentView(web)
@@ -84,6 +86,21 @@ class MainActivity : AppCompatActivity() {
     private fun queueRetry() {
         retryQueued = true
         ui.postDelayed({ if (retryQueued) { retryQueued = false; web.loadUrl(DASHBOARD_URL) } }, RETRY_MS)
+    }
+
+    /** The TV's graphics plane is ~960 CSS px wide (4K panel, 1080p UI surface at density 2),
+     *  so the dashboard — built for ~1920 — renders zoomed. Force a 1920-wide viewport scaled
+     *  to fit the screen, so it's the right size WITHOUT changing the system density (which
+     *  would make Google TV's own launcher error with "1920x1080 not supported"). */
+    private fun fitTo1920(view: WebView) {
+        view.evaluateJavascript(
+            "(function(){var sw=window.screen.width||window.innerWidth||960;var s=sw/1920;" +
+                "var m=document.querySelector('meta[name=viewport]');" +
+                "if(!m){m=document.createElement('meta');m.setAttribute('name','viewport');" +
+                "(document.head||document.documentElement).appendChild(m);}" +
+                "m.setAttribute('content','width=1920, initial-scale='+s+', minimum-scale='+s+', maximum-scale='+s+', user-scalable=no');})();",
+            null,
+        )
     }
 
     private fun hideSystemUi() {
